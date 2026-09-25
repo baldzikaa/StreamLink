@@ -82,6 +82,30 @@ class SettingsTest {
     }
 
     @Test
+    fun `disabled rules are skipped quietly`() {
+        val (settings, warnings) = load(
+            """
+            rules:
+              on-rule:
+                events: chat
+                actions:
+                  - message: hi
+              off-rule:
+                enabled: false
+                events: chat
+                actions:
+                  - message: hi
+              off-and-broken:
+                enabled: false
+                events: [teleport]
+            """.trimIndent(),
+        )
+
+        assertEquals(listOf("on-rule"), settings.rules.map { it.name })
+        assertEquals(emptyList(), warnings)
+    }
+
+    @Test
     fun durations() {
         assertEquals(30.seconds, Settings.duration("30s"))
         assertEquals(30.seconds, Settings.duration("30"))

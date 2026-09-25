@@ -86,6 +86,7 @@ rules:
 | `gift` | TikTok gift names, like `[Rose, Galaxy]` |
 | `chance` | `0.25` fires a quarter of the time |
 | `cooldown` | `30s`, `5m`, `1h`. Counted per rule and per streamer |
+| `enabled` | `false` turns the rule off without deleting it |
 
 **Actions:**
 

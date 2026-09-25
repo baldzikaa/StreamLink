@@ -58,7 +58,9 @@ data class Settings(
         private fun rules(section: ConfigurationSection?, warn: (String) -> Unit): List<Rule> {
             section ?: return emptyList()
             return section.getKeys(false).mapNotNull { name ->
-                runCatching { rule(name, section.getConfigurationSection(name)!!) }
+                val rule = section.getConfigurationSection(name) ?: return@mapNotNull null
+                if (!rule.getBoolean("enabled", true)) return@mapNotNull null
+                runCatching { rule(name, rule) }
                     .onFailure { warn("skipping rule '$name': ${it.message}") }
                     .getOrNull()
             }

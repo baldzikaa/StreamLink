@@ -34,6 +34,7 @@ tiktok:
 #   gift: [Rose, Galaxy]  tiktok gift names
 #   chance: 0.25
 #   cooldown: 30s
+#   enabled: false   turns a rule off without deleting it
 #
 # placeholders: {user} {player} {platform} {amount} {count} {message} {currency} {gift} {months}
 #
