@@ -1,0 +1,103 @@
+{
+  "responseContext": {},
+  "continuationContents": {
+    "liveChatContinuation": {
+      "continuations": [
+        {
+          "invalidationContinuationData": {
+            "invalidationId": {"objectSource": 1056, "topic": "chat~abcdefghijk"},
+            "timeoutMs": 10000,
+            "continuation": "next-page-token"
+          }
+        }
+      ],
+      "actions": [
+        {
+          "clickTrackingParams": "x",
+          "addChatItemAction": {
+            "item": {
+              "liveChatTextMessageRenderer": {
+                "message": {"runs": [{"text": "gg "}, {"emoji": {"emojiId": "x", "shortcuts": [":fire:"], "searchTerms": ["fire"]}}, {"text": " !tnt"}]},
+                "authorName": {"simpleText": "@FirstViewer"},
+                "id": "1",
+                "timestampUsec": "1"
+              }
+            }
+          }
+        },
+        {
+          "addChatItemAction": {
+            "item": {
+              "liveChatPaidMessageRenderer": {
+                "id": "2",
+                "authorName": {"simpleText": "@BigFan"},
+                "purchaseAmountText": {"simpleText": "€5,00"},
+                "message": {"runs": [{"text": "love the stream"}]}
+              }
+            }
+          }
+        },
+        {
+          "addChatItemAction": {
+            "item": {
+              "liveChatPaidStickerRenderer": {
+                "id": "3",
+                "authorName": {"simpleText": "@StickerFan"},
+                "purchaseAmountText": {"simpleText": "CA$1,000.00"}
+              }
+            }
+          }
+        },
+        {
+          "addChatItemAction": {
+            "item": {
+              "liveChatMembershipItemRenderer": {
+                "id": "4",
+                "authorName": {"simpleText": "@LongMember"},
+                "headerPrimaryText": {"runs": [{"text": "Member for "}, {"text": "6"}, {"text": " months"}]},
+                "headerSubtext": {"simpleText": "The Club"}
+              }
+            }
+          }
+        },
+        {
+          "addChatItemAction": {
+            "item": {
+              "liveChatMembershipItemRenderer": {
+                "id": "5",
+                "authorName": {"simpleText": "@NewMember"},
+                "headerSubtext": {"runs": [{"text": "Welcome to "}, {"text": "The Club"}, {"text": "!"}]}
+              }
+            }
+          }
+        },
+        {
+          "addChatItemAction": {
+            "item": {
+              "liveChatSponsorshipsGiftPurchaseAnnouncementRenderer": {
+                "id": "6",
+                "header": {
+                  "liveChatSponsorshipsHeaderRenderer": {
+                    "authorName": {"simpleText": "@Generous"},
+                    "primaryText": {"runs": [{"text": "Sent ", "bold": true}, {"text": "5", "bold": true}, {"text": " The Club gift memberships", "bold": true}]}
+                  }
+                }
+              }
+            }
+          }
+        },
+        {"removeChatItemAction": {"targetItemId": "1"}},
+        {
+          "addChatItemAction": {
+            "item": {
+              "liveChatViewerEngagementMessageRenderer": {
+                "id": "7",
+                "message": {"runs": [{"text": "Subscribers-only mode."}]}
+              }
+            }
+          }
+        }
+      ]
+    }
+  }
+}
