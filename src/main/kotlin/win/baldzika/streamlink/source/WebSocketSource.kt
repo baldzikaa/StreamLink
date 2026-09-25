@@ -5,6 +5,7 @@ import win.baldzika.streamlink.event.StreamEvent
 import java.net.URI
 import java.net.http.HttpClient
 import java.net.http.WebSocket
+import java.util.concurrent.CompletableFuture
 import java.util.concurrent.CompletionStage
 import java.util.concurrent.ScheduledExecutorService
 import java.util.concurrent.ScheduledFuture
@@ -56,8 +57,14 @@ abstract class WebSocketSource(
         socket = null
     }
 
+    private val sendLock = Any()
+    private var sending: CompletableFuture<*> = CompletableFuture.completedFuture(null)
+
+    // java's websocket only allows one send in flight, a second one fails instead of waiting
     protected fun send(socket: WebSocket, text: String) {
-        socket.sendText(text, true)
+        synchronized(sendLock) {
+            sending = sending.handle { _, _ -> null }.thenCompose { socket.sendText(text, true) }
+        }
     }
 
     private inner class Listener(private val session: Int) : WebSocket.Listener {

@@ -86,4 +86,16 @@ class TwitchSourceTest {
         assertEquals(Status.STOPPED, source.status)
         assertTrue(events.queue.isEmpty())
     }
+
+    @Test
+    fun `answers a burst of big pings in order`() {
+        source.start()
+        val conn = handshake()
+        val pad = "x".repeat(100_000)
+        conn.send((1..30).joinToString("") { "PING :$it$pad\r\n" })
+
+        for (i in 1..30) {
+            assertEquals("PONG :$i$pad", server.received.next())
+        }
+    }
 }
