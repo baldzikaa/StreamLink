@@ -1,0 +1,16 @@
+name: StreamLink
+version: ${version}
+main: win.baldzika.streamlink.StreamLinkPlugin
+api-version: "26.1"
+folia-supported: true
+author: baldzika
+description: Twitch, Kick, YouTube and TikTok live events trigger things in game
+libraries:
+  - org.jetbrains.kotlin:kotlin-stdlib:${kotlin}
+permissions:
+  streamlink.admin:
+    description: status, reload and test commands
+    default: op
+  streamlink.pause:
+    description: lets a linked streamer pause their own events
+    default: true

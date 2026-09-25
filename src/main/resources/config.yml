@@ -1,0 +1,95 @@
+# who is streaming where. the key is the minecraft name of the streamer, events from
+# their channels run the rules below on them.
+links:
+  Notch:
+    twitch: notch
+    # kick: notch
+    # youtube: "@notch"        # a handle, channel id, video id or link
+    # tiktok: notch
+    # kick-chatroom: 123456    # only needed if kick blocks the channel lookup
+
+# show stream chat to the linked player in game
+relay-chat:
+  enabled: true
+  format: "<dark_gray>[<{color}>{platform}</{color}>]</dark_gray> <gray>{user}:</gray> <white>{message}"
+
+# skip events while the linked player is offline
+only-when-online: true
+
+limits:
+  max-spawn: 25
+  max-give: 64
+
+tiktok:
+  # optional eulerstream key, helps if tiktok connections keep getting refused
+  api-key: ""
+
+# events you can use: chat, follow, sub, gift-subs, donation, gift, raid, like, share
+#
+# filters, all optional:
+#   platforms: [twitch, kick]
+#   min / max: compared to the event amount. bits or money for donations, coins for gifts,
+#              months for subs, count for gift-subs and likes, viewers for raids
+#   match: regex checked against chat and donation messages
+#   gift: [Rose, Galaxy]  tiktok gift names
+#   chance: 0.25
+#   cooldown: 30s
+#
+# placeholders: {user} {player} {platform} {amount} {count} {message} {currency} {gift} {months}
+#
+# actions: message, broadcast, actionbar, title, sound, spawn, effect, give, lightning, command
+rules:
+  welcome-follow:
+    events: follow
+    actions:
+      - title:
+          title: "<gold>{user}"
+          subtitle: "<yellow>followed on {platform}"
+      - sound: entity.player.levelup
+
+  sub-zombies:
+    events: [sub, gift-subs]
+    actions:
+      - message: "<green>{user} subscribed, here come {count} zombies"
+      - spawn:
+          entity: zombie
+          amount: "{count}"
+          radius: 6
+
+  big-donation:
+    events: [donation, gift]
+    min: 100
+    actions:
+      - broadcast: "<light_purple>{user} just sent {amount} {currency} to {player}"
+      - lightning:
+          harmless: true
+
+  chat-tnt:
+    events: chat
+    match: "^!tnt$"
+    cooldown: 30s
+    actions:
+      - actionbar: "<red>{user} dropped a tnt on you"
+      - spawn:
+          entity: tnt
+          radius: 3
+
+  raid-party:
+    events: raid
+    min: 10
+    actions:
+      - broadcast: "<aqua>{user} raided {player} with {count} viewers"
+      - give:
+          item: cake
+          amount: 1
+
+  likes-speed:
+    events: like
+    min: 10
+    chance: 0.5
+    cooldown: 20s
+    actions:
+      - effect:
+          type: speed
+          seconds: 10
+          level: 2
