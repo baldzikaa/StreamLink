@@ -24,6 +24,9 @@ sealed interface Action {
 
     companion object {
 
+        // further out and a spawn can land in a chunk another folia region owns
+        const val MAX_RADIUS = 16.0
+
         fun parse(raw: Map<*, *>): Action {
             require(raw.size == 1) { "each action needs exactly one type, got ${raw.keys}" }
             val (key, value) = raw.entries.first()
@@ -43,11 +46,15 @@ sealed interface Action {
                     Sound(value.toString(), 1f, 1f)
                 }
                 "spawn" -> if (value is Map<*, *>) {
-                    Spawn(text("entity"), text("amount", "1"), number("radius", 4.0))
+                    Spawn(text("entity"), text("amount", "1"), number("radius", 4.0).coerceIn(0.0, MAX_RADIUS))
                 } else {
                     Spawn(value.toString(), "1", 4.0)
                 }
-                "effect" -> Effect(text("type"), number("seconds", 10.0).toInt(), number("level", 1.0).toInt())
+                "effect" -> Effect(
+                    text("type"),
+                    number("seconds", 10.0).toInt().coerceIn(1, 3600),
+                    number("level", 1.0).toInt().coerceIn(1, 255),
+                )
                 "give" -> if (value is Map<*, *>) Give(text("item"), text("amount", "1")) else Give(value.toString(), "1")
                 "lightning" -> Lightning(options["harmless"]?.toString()?.toBooleanStrictOrNull() ?: true)
                 else -> throw IllegalArgumentException("unknown action '$key'")

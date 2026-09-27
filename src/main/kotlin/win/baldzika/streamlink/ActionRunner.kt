@@ -34,11 +34,18 @@ class ActionRunner(private val plugin: Plugin) {
 
         if (global.isNotEmpty()) {
             Bukkit.getGlobalRegionScheduler().execute(plugin) {
-                global.forEach { action -> runGlobal(action, values) }
+                global.forEach { action -> safely(rule, action) { runGlobal(action, values) } }
             }
         }
         if (target != null && personal.isNotEmpty()) {
-            target.scheduler.run(plugin, { personal.forEach { action -> runFor(target, action, values, settings) } }, null)
+            target.scheduler.run(plugin, { personal.forEach { action -> safely(rule, action) { runFor(target, action, values, settings) } } }, null)
+        }
+    }
+
+    // one broken action shouldn't stop the rest of the rule
+    private fun safely(rule: Rule, action: Action, block: () -> Unit) {
+        runCatching(block).onFailure {
+            plugin.logger.warning("rule '${rule.name}' couldn't run ${action.javaClass.simpleName.lowercase()}: ${it.message}")
         }
     }
 
@@ -52,6 +59,7 @@ class ActionRunner(private val plugin: Plugin) {
             is Action.Spawn -> if (entity(action.entity) == null) "unknown entity '${action.entity}'" else null
             is Action.Effect -> if (effect(action.effect) == null) "unknown effect '${action.effect}'" else null
             is Action.Give -> if (Material.matchMaterial(action.item)?.isItem != true) "unknown item '${action.item}'" else null
+            is Action.Sound -> if (!Key.parseable(action.sound.lowercase())) "bad sound name '${action.sound}', use something like entity.player.levelup" else null
             else -> null
         }
     }

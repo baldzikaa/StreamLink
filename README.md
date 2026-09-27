@@ -95,7 +95,7 @@ rules:
 | `message`, `actionbar`, `title` | shown to the streamer, [MiniMessage](https://docs.advntr.dev/minimessage/format.html) formatting |
 | `broadcast` | shown to everyone |
 | `sound` | `entity.player.levelup`, or with `volume` and `pitch` |
-| `spawn` | any entity near the streamer, `amount` can use placeholders |
+| `spawn` | any entity near the streamer, `amount` can use placeholders, `radius` up to 16 blocks |
 | `effect` | potion effect with `type`, `seconds` and `level` |
 | `give` | item and amount |
 | `lightning` | `harmless: false` if you want it to hurt |

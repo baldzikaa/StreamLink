@@ -22,7 +22,6 @@ class StreamLinkPlugin : JavaPlugin() {
         http = HttpClient.newBuilder()
             .connectTimeout(Duration.ofSeconds(15))
             .followRedirects(HttpClient.Redirect.NORMAL)
-            .executor(scheduler)
             .build()
         runner = ActionRunner(this)
         streams = Streams(http, scheduler, logger, runner)
@@ -36,7 +35,7 @@ class StreamLinkPlugin : JavaPlugin() {
     override fun onDisable() {
         if (::streams.isInitialized) streams.stop()
         if (::scheduler.isInitialized) scheduler.shutdownNow()
-        if (::http.isInitialized) http.close()
+        if (::http.isInitialized) http.shutdownNow()
     }
 
     fun reload() {

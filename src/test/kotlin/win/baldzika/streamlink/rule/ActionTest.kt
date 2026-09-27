@@ -22,6 +22,14 @@ class ActionTest {
     }
 
     @Test
+    fun `keeps numbers in a safe range`() {
+        assertEquals(Action.Spawn("zombie", "1", 16.0), Action.parse(mapOf("spawn" to mapOf("entity" to "zombie", "radius" to 500))))
+        assertEquals(Action.Spawn("zombie", "1", 0.0), Action.parse(mapOf("spawn" to mapOf("entity" to "zombie", "radius" to -3))))
+        assertEquals(Action.Effect("speed", 3600, 255), Action.parse(mapOf("effect" to mapOf("type" to "speed", "seconds" to 999999, "level" to 1000))))
+        assertEquals(Action.Effect("speed", 1, 1), Action.parse(mapOf("effect" to mapOf("type" to "speed", "seconds" to 0, "level" to 0))))
+    }
+
+    @Test
     fun `rejects unknown or ambiguous actions`() {
         assertFailsWith<IllegalArgumentException> { Action.parse(mapOf("explode" to "yes")) }
         assertFailsWith<IllegalArgumentException> { Action.parse(mapOf("message" to "a", "broadcast" to "b")) }
