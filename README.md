@@ -87,6 +87,7 @@ rules:
 | `chance` | `0.25` fires a quarter of the time |
 | `cooldown` | `30s`, `5m`, `1h`. Counted per rule and per streamer |
 | `enabled` | `false` turns the rule off without deleting it |
+| `targets` | who player actions hit, see below |
 
 **Actions:**
 
@@ -101,7 +102,27 @@ rules:
 | `lightning` | `harmless: false` if you want it to hurt |
 | `command` | runs from the console |
 
-**Placeholders:** `{user}` `{player}` `{platform}` `{amount}` `{count}` `{message}` `{currency}` `{gift}` `{months}`
+**Placeholders:** `{user}` `{player}` `{target}` `{platform}` `{amount}` `{count}` `{message}` `{currency}` `{gift}` `{months}`
+
+### Who gets hit
+
+`message`, `actionbar`, `title`, `sound`, `spawn`, `effect`, `give` and `lightning` hit the linked streamer by default. `targets` changes that for one rule, and `default-targets` changes it for every rule that doesn't set its own:
+
+```yaml
+default-targets: streamer        # only the linked player
+
+rules:
+  gift-storm:
+    events: gift
+    targets: all                 # everyone online
+    ...
+  squad-zombies:
+    events: sub
+    targets: "streamer, Steve, Alex"   # the streamer plus these players
+    ...
+```
+
+Names are split by commas and don't care about case. Players who aren't online are skipped. `{player}` is always the streamer and `{target}` is whoever the action is hitting, so `"{user} made it rain on {target}"` reads right for everyone. `broadcast` and `command` run once no matter what `targets` says. `limits` count per player, so `targets: all` with `max-spawn: 25` can mean 25 mobs next to every player online.
 
 Anything a viewer typed is escaped before it goes into MiniMessage, so nobody can slip a click event into your chat. In `command` actions, names and messages are stripped down to letters, numbers and basic punctuation, so they can't break out of the command. `spawn` and `give` amounts are capped by `limits` in the config, so a 10,000 coin gift doesn't spawn 10,000 zombies.
 

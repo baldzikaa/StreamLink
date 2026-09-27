@@ -16,6 +16,11 @@ relay-chat:
 # skip events while the linked player is offline
 only-when-online: true
 
+# who player actions (message, title, spawn, effect, give, lightning...) hit when a rule
+# doesn't say. streamer is the linked player, all is everyone online, or list names
+# split by commas like "Steve, Alex". streamer can go in the list too: "streamer, Steve"
+default-targets: streamer
+
 limits:
   max-spawn: 25
   max-give: 64
@@ -35,8 +40,9 @@ tiktok:
 #   chance: 0.25
 #   cooldown: 30s
 #   enabled: false   turns a rule off without deleting it
+#   targets: all     overrides default-targets for this rule
 #
-# placeholders: {user} {player} {platform} {amount} {count} {message} {currency} {gift} {months}
+# placeholders: {user} {player} {target} {platform} {amount} {count} {message} {currency} {gift} {months}
 #
 # actions: message, broadcast, actionbar, title, sound, spawn, effect, give, lightning, command
 rules:
@@ -60,6 +66,8 @@ rules:
   big-donation:
     events: [donation, gift]
     min: 100
+    # everyone online gets struck, not just the streamer
+    targets: all
     actions:
       - broadcast: "<light_purple>{user} just sent {amount} {currency} to {player}"
       - lightning:

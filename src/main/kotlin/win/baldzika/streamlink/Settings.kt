@@ -5,6 +5,7 @@ import win.baldzika.streamlink.event.EventType
 import win.baldzika.streamlink.event.Platform
 import win.baldzika.streamlink.rule.Action
 import win.baldzika.streamlink.rule.Rule
+import win.baldzika.streamlink.rule.Targets
 import kotlin.time.Duration
 import kotlin.time.Duration.Companion.hours
 import kotlin.time.Duration.Companion.milliseconds
@@ -22,6 +23,7 @@ data class Settings(
     val maxSpawn: Int,
     val maxGive: Int,
     val tiktokApiKey: String,
+    val defaultTargets: Targets = Targets.STREAMER,
 ) {
 
     companion object {
@@ -37,7 +39,20 @@ data class Settings(
             maxSpawn = config.getInt("limits.max-spawn", 25).coerceIn(0, 500),
             maxGive = config.getInt("limits.max-give", 64).coerceIn(0, 2304),
             tiktokApiKey = config.getString("tiktok.api-key").orEmpty(),
+            defaultTargets = defaultTargets(config, warn),
         )
+
+        private fun defaultTargets(config: ConfigurationSection, warn: (String) -> Unit): Targets {
+            val text = targetsText(config, "default-targets") ?: return Targets.STREAMER
+            return runCatching { Targets.parse(text) }.getOrElse {
+                warn("default-targets: ${it.message}, using streamer")
+                Targets.STREAMER
+            }
+        }
+
+        // accepts "Steve, Alex" or a yaml list
+        private fun targetsText(section: ConfigurationSection, key: String): String? =
+            if (section.isList(key)) section.getStringList(key).joinToString(",") else section.getString(key)
 
         private fun links(section: ConfigurationSection?, warn: (String) -> Unit): List<Link> {
             section ?: return emptyList()
@@ -83,6 +98,7 @@ data class Settings(
                 chance = section.getDouble("chance", 1.0).coerceIn(0.0, 1.0),
                 cooldown = section.getString("cooldown")?.let(::duration) ?: Duration.ZERO,
                 actions = actions,
+                targets = targetsText(section, "targets")?.let(Targets::parse),
             )
         }
 

@@ -16,6 +16,7 @@ data class Rule(
     val chance: Double = 1.0,
     val cooldown: Duration = Duration.ZERO,
     val actions: List<Action>,
+    val targets: Targets? = null,
 ) {
 
     fun matches(event: StreamEvent): Boolean {

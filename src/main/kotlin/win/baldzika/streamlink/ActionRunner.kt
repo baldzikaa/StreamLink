@@ -27,9 +27,8 @@ class ActionRunner(private val plugin: Plugin) {
 
     private val mini = MiniMessage.miniMessage()
 
-    fun run(player: String, rule: Rule, values: Map<String, String>, settings: Settings) {
-        val target = Bukkit.getPlayerExact(player)
-        if (target == null && settings.onlyWhenOnline) return
+    fun run(streamer: String, rule: Rule, values: Map<String, String>, settings: Settings) {
+        if (settings.onlyWhenOnline && Bukkit.getPlayerExact(streamer) == null) return
         val (global, personal) = rule.actions.partition { it is Action.Command || it is Action.Broadcast }
 
         if (global.isNotEmpty()) {
@@ -37,8 +36,14 @@ class ActionRunner(private val plugin: Plugin) {
                 global.forEach { action -> safely(rule, action) { runGlobal(action, values) } }
             }
         }
-        if (target != null && personal.isNotEmpty()) {
-            target.scheduler.run(plugin, { personal.forEach { action -> safely(rule, action) { runFor(target, action, values, settings) } } }, null)
+        if (personal.isEmpty()) return
+
+        val targets = rule.targets ?: settings.defaultTargets
+        for (name in targets.resolve(streamer, Bukkit.getOnlinePlayers().map { it.name })) {
+            val target = Bukkit.getPlayerExact(name) ?: continue
+            val own = values + ("target" to target.name)
+            // each player runs on their own thread, on folia that can be a different region per player
+            target.scheduler.run(plugin, { personal.forEach { action -> safely(rule, action) { runFor(target, action, own, settings) } } }, null)
         }
     }
 

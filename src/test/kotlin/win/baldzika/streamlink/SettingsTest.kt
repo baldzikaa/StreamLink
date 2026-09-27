@@ -4,6 +4,7 @@ import org.bukkit.configuration.file.YamlConfiguration
 import win.baldzika.streamlink.event.EventType
 import win.baldzika.streamlink.event.Platform
 import win.baldzika.streamlink.rule.Action
+import win.baldzika.streamlink.rule.Targets
 import kotlin.test.Test
 import kotlin.test.assertEquals
 import kotlin.test.assertFailsWith
@@ -103,6 +104,49 @@ class SettingsTest {
 
         assertEquals(listOf("on-rule"), settings.rules.map { it.name })
         assertEquals(emptyList(), warnings)
+    }
+
+    @Test
+    fun targets() {
+        val (settings, warnings) = load(
+            """
+            default-targets: all
+            rules:
+              default:
+                events: gift
+                actions:
+                  - spawn: zombie
+              listed:
+                events: gift
+                targets: "Steve, Alex"
+                actions:
+                  - spawn: zombie
+              yaml-list:
+                events: gift
+                targets: [streamer, Steve]
+                actions:
+                  - spawn: zombie
+              bad:
+                events: gift
+                targets: "Steve, not a name"
+                actions:
+                  - spawn: zombie
+            """.trimIndent(),
+        )
+
+        assertEquals(Targets.EVERYONE, settings.defaultTargets)
+        val rules = settings.rules.associateBy { it.name }
+        assertEquals(null, rules.getValue("default").targets)
+        assertEquals(setOf("Steve", "Alex"), rules.getValue("listed").targets!!.players)
+        assertEquals(Targets(everyone = false, streamer = true, players = setOf("Steve")), rules.getValue("yaml-list").targets)
+        assertEquals(listOf("skipping rule 'bad': 'not a name' isn't a valid player name"), warnings)
+    }
+
+    @Test
+    fun `bad default targets fall back to the streamer`() {
+        val (settings, warnings) = load("default-targets: \"all, Steve\"\n")
+        assertEquals(Targets.STREAMER, settings.defaultTargets)
+        assertEquals(1, warnings.size)
     }
 
     @Test

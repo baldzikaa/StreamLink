@@ -63,7 +63,7 @@ class Streams(
 
     fun handle(player: String, event: StreamEvent) {
         val settings = settings
-        val values = event.values() + ("player" to player) + ("color" to event.platform.color)
+        val values = event.values() + ("player" to player) + ("target" to player) + ("color" to event.platform.color)
         if (event is StreamEvent.Chat && settings.relayChat) {
             Bukkit.getPlayerExact(player)?.sendMessage(runner.text(settings.relayFormat, values))
         }
